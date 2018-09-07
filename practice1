@@ -1,0 +1,51 @@
+
+// My solution to leetcode problem 873: Length of longest fibonacci subsequence
+// longest[x][y] means the length of the longest fibo sequence whose last two elements are y and A[x]
+// for all j < i, longest[i][A[j]] = longest[j][A[i] - A[j]] + 1 or 2
+
+int lengthLongestFibSubseq(vector<int>& A)
+{
+	int n = A.size();
+	int max_len = 0;
+	vector<map<int, int>> count;
+	for (int i = 0; i < n; ++i)
+		for (int j = 0; j < i; ++j)
+		{
+			count[i][A[j]] = 2;   // there is always a weak fibonacci seq of two elements
+			if (count[j].find(A[i] - A[j]) != count[j].end())
+			{	
+				count[i][A[j]] = count[j][A[i] - A[j]] + 1;
+				if (count[i][A[j]] > max_len)
+					max_len = count[i][A[j]];
+			}
+		}
+
+	return max_len;
+}
+
+// the reference solution to leetcode problem 873, using a clearer dynamic programming approach
+// longest[i][j] means the length of the longest fibo seq whose last two elements are A[j] and A[i]
+// for j < i, longest[i][j] = longest[j][k] + 1 where k is the index of A[i] - A[j] 
+
+int lenLongestFibSubseq(vector<int>& A) {
+        int n = A.size();
+        unordered_map<int, int> index;
+        for (int i = 0; i < n; ++i)
+            index[A[i]] = i;
+        
+	    vector<int> count (n*n, 0);
+        int max_len = 0;
+	    for (int i = 0; i < n; ++i)     // for each last element
+		    for (int j = 0; j < i; ++j) // for each possible second to last element
+                if (A[i] - A[j] < A[j] && index.find(A[i] - A[j]) != index.end() )
+                    // be careful that the third to last element must be smaller than the second to last
+                {
+                    int k = index[A[i] - A[j]];
+                    int length = (count[j * n + k] > 0) ? (count[j * n + k] + 1) : 3;
+                    count[i * n + j] = length;
+                    max_len = max(length , max_len);
+                }
+		    
+	    return max_len;
+    }
+};
