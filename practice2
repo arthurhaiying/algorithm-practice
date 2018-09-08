@@ -1,0 +1,60 @@
+
+// my solution to Leetcode problem, minimum path sum
+// shortest[x][y] means the length of the shortest path from A[x][y] to A[0][0]
+// shortest[x][y] = A[x][y] + min(shortest[x-1][y], shortest[x][y -1]) and we take shortest[m][n]
+
+int minPathSum(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<int> shortest (m * n);
+        shortest[0] = grid[0][0];
+        
+        for (int l = 1; l < m + n - 1; ++l)
+        {
+            int start = (l < n) ? 0 : l - n + 1;
+            int end = (l < m) ? l : (m - 1);
+            for (int i = start; i <= end; ++i)
+            {
+                int j = l - i;
+                int up = (i > 0) ? shortest[(i - 1) * n + j] : INT32_MAX;
+                int left = (j > 0) ? shortest[i * n + (j - 1)] : INT32_MAX;
+                shortest[i * n + j] = grid[i][j] + min(up, left);
+                
+            }
+        }
+        
+        return shortest[m*n - 1];
+    }
+
+
+// my solution to leetcode problem, queue reconstruction
+// sort the people by decreasing height
+bool compare(const pair<int, int>& a, const pair<int, int>& b)
+{
+	return a.first > b.first || (a.first == b.first && a.second < b.second);
+}
+
+
+// before each iteration, people[0: i] are in the correct order and taller than all the rest people
+// we then move people[i] to the correct position of the current queue
+vector<pair<int, int>> reconstructQueue(vector<pair<int, int>>& people)
+{
+	vector<pair<int, int>> people_sorted = people;
+	sort(people_sorted.begin(), people_sorted.end(), compare);  // sort the people by decreasing height
+
+	int size = people_sorted.size();
+	for (int i = 1; i < size; ++i) 
+		// before each iteration, people[0: i) are in the correct order and taller than the later people
+	{
+		pair<int, int> temp = people_sorted[i];
+		int pos = temp.second;
+		if (pos != i)
+		{
+			for (int j = i; j > pos; --j)
+				people_sorted[j] = people_sorted[j - 1];
+			people_sorted[pos] = temp;
+		}
+	}
+
+	return people_sorted;
+}
