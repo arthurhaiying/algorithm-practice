@@ -58,3 +58,64 @@ vector<pair<int, int>> reconstructQueue(vector<pair<int, int>>& people)
 
 	return people_sorted;
 }
+
+
+
+// Since we are looking for the solution with minimum change of bus, we only need to track whether two bus routes intersect and do not need to worry about the number of stops
+// we can view each bus line as a node, where two nodes are connected if two bus routes intersect. 
+// we do breadth first seach from the source nodes to the destination nodes (bus lines that contain the destination stop)
+
+int numBusesToDestination(vector<vector<int>>& routes, int S, int T)
+{
+	int num_buses = routes.size();
+	vector<vector<int>> transfer_table (num_buses);
+	vector<int> source_buses;
+	unordered_set<int> destination_buses;
+	vector<int> isBusExplored (num_buses, 0);
+
+	for (int i = 0; i < num_buses; ++i)
+	{
+		unordered_set<int> stops(routes[i].begin(), routes[i].end());
+		for (int j = i + 1; j < num_buses; ++j)
+			for (auto it = routes[j].begin(); it != routes[j].end(); ++it)
+				if (stops.count(*it))
+				{
+					transfer_table[i].push_back(j);
+					transfer_table[j].push_back(i);
+					// bus i can be transferred to bus j by this stop
+				}
+
+		if (stops.count(S))
+			source_buses.push_back(i);
+		if (stops.count(T))
+			destination_buses.insert(i);
+
+	}
+
+
+	queue<bus> q;
+
+	if (S == T)
+		return 0;
+	// if the source stop and the destination stop are the same stop of bus k
+	// then bus k will appear both in source_buses and destination_buses and be counted as length one
+
+    for (auto it = source_buses.begin(); it != source_buses.end(); ++it)
+   		q.push((bus) {*it, 1});
+
+   	while(!q.empty())
+   	{
+   		struct bus temp = q.front();
+   		q.pop();
+   		if (destination_buses.count(temp.num))
+   			return temp.order;
+   		isBusExplored[temp.num] = 1;
+   		// try to change to another bus
+   		for (auto it = transfer_table[temp.num].begin(); it != transfer_table[temp.num].end(); ++it)
+   			if (!isBusExplored[*it])
+   				q.push_back((bus) {*it, temp.order + 1});
+   }
+
+   	return -1;
+
+}
