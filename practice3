@@ -1,0 +1,50 @@
+
+
+// my solution to leetcode problem, Maximum frequency stack
+struct element
+{
+    int x;
+    int freq;
+    int num;
+};
+
+bool operator<(const element& lhs, const element& rhs)
+{
+    return lhs.freq < rhs.freq || (lhs.freq == rhs.freq && lhs.num < rhs.num);
+}
+    
+// we use a heap to keep the most frequent element at the top
+// we use a hashtable to keep track of the number of occurrences of elements in the heap
+// notice that we also compare the order that the two elements are added 
+class FreqStack {
+public:
+    FreqStack() {
+        count = 0;
+    }
+    
+    void push(int x) {
+        element temp = {x, ++freqTable[x], ++count};
+        maxheap.push(temp);
+    }
+    
+    int pop() {
+        element temp = maxheap.top();
+        freqTable[temp.x]--;
+        maxheap.pop();
+        return temp.x;
+    }
+    
+private:
+    priority_queue<element> maxheap;
+    unordered_map<int, int> freqTable;
+    int count;
+    
+    
+};
+
+/**
+ * Your FreqStack object will be instantiated and called as such:
+ * FreqStack obj = new FreqStack();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ */
