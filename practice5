@@ -1,0 +1,28 @@
+
+// My solution to Leetcode problem, Cheapest fligtht within K stops
+// This problem can be reduced to finding the shortest path with at most K + 1 edges
+// We apply the bellman ford algor, with K + 1 iterations, dist[v] would be <= the shortest path with at most K edges
+// We reserve the update of distance for the next iteration to get the "worst case"
+
+int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) 
+{
+    // We apply bellman_ford algorithm with K iterations
+    vector<long> dist (n, INT32_MAX);
+    vector<long> dist_updated = dist;
+        
+    dist[src] = 0;
+    for (int i = 0; i < K + 1; ++i)
+    {
+        for (int j = 0; j < flights.size(); ++j)
+        {
+                
+            int u = flights[j][0], v = flights[j][1], w = flights[j][2];
+            long alt = (long)dist[u] + (long)w;
+            if (alt < dist_updated[v])          // Do not update dist[v] until the next iteration to avoid the "best case"
+                dist_updated[v] = alt;
+        }
+            dist = dist_updated;
+    }
+        
+        return (dist[dst] != INT32_MAX) ? dist[dst] : -1;
+}
