@@ -76,3 +76,31 @@ bool checkPerfectNumber(int num)
     return sum == num;
 }
 
+
+// We apply binary search to find the peak element in an array
+// We find the local slope of the middle element to locate the peak in half the array
+int findPeak(vector<int>& nums)
+{
+    nums.push_back(INT32_MIN);
+    return findPeak_rec(nums, 0, nums.size() - 1);
+}
+
+int findPeak_rec(vector<int>& nums, int p, int q)
+{   
+    // slope of p is always positive and slope of q is always negative
+    if (q == p + 1)
+        return p;
+
+    int mid = (p + q)/2;
+    int slope_left = (nums[mid] > nums[mid - 1]) ? 1 : -1;
+    int slope_right = (nums[mid + 1] > nums[mid]) ? 1 : -1;
+    if (slope_left < 0)
+        return findPeak_rec(nums, p, mid);
+    else if (slope_right > 0)
+        return findPeak_rec(nums, mid + 1, q);
+    else // slope_left > 0 and slope_right < 0
+        return mid;
+
+}
+
+
