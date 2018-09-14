@@ -26,3 +26,53 @@ int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int
         
         return (dist[dst] != INT32_MAX) ? dist[dst] : -1;
 }
+
+
+// My solution to leetcode problem, check perfect number
+bool checkPerfectNumber(int num) 
+{
+    vector<int> factors;
+    if (num != 1)
+        factors.push_back(1);
+
+    int p = 2, q = num;
+    while (p < q)
+    {
+        if (!(num % p))
+        {   
+            factors.push_back(p);
+            q = num / p;
+            if (p != q)
+                factors.push_back(q);
+        }
+        ++p;
+    }
+
+    int sum = 0;
+    for (int i = 0; i < factors.size(); ++i)
+        sum += factors[i];
+
+    return num == sum;
+}
+
+// reference solution that takes a slightly better approach
+// check all integers until sqrt(num)
+bool checkPerfectNumber(int num)
+{
+    if (num == 1)
+        return false;
+
+    int sum = 1;
+    for (int i = 2; i * i <= num; ++i)
+        if (num % i == 0)
+        {
+            sum += i;
+            if (i * i != num)
+                sum += num / i;
+            if (sum > num)
+            return false;
+        }
+
+    return sum == num;
+}
+
