@@ -1,0 +1,93 @@
+
+// Solution to leetcode problem, zigzag conversion
+// Be careful about the special case numRows = 1
+string convert(string s, int numRows) 
+{
+    int n = s.size();
+	int period = (numRows > 1) ? (2 * numRows - 2) : 1;
+	vector<string> rows (numRows);
+
+	for (int i = 0; i < n; ++i)
+	{	
+		int r = i % period;
+		int nRow = (r < numRows) ? r : (period - r); // the current char is located at nRow in the zigzag version
+		rows[nRow] += s[i];
+	}
+
+	string res;
+	for (int j = 0; j < numRows; ++j)
+		res += rows[j];
+	return res;
+        
+}
+
+// Solution to leetcode problem, palindrome number
+// Check if an integer is a padindrome without using extra space
+bool isPalindrome(int x) 
+{
+    
+    if (x < 0) return false;
+	int reversed = 0;
+    int curr = x;
+	while (curr > 0)
+	{
+		int digit = curr % 10;
+		curr /= 10;
+
+		if (reversed < INT32_MAX / 10 ||
+			(reversed == INT32_MAX / 10 && digit <= INT32_MAX % 10))
+			reversed = reversed * 10 + digit;
+		else // detect integer overflow
+			return false;
+	}
+
+	return reversed == x;
+}
+
+// The reference solution to leetcode problem, regular expression matching
+// use a clearer approach to deal with wildcard cases
+bool isMatch(string s, string p)
+{
+// isMatch_table[i][j] means whether s[i:] can be represented by p[j:]
+vector<vector<int>> isMatch_table;
+for (int i = 0; i <= s.size(); ++i)
+{
+	vector<int> temp;
+	for (int j = 0; j <= p.size(); ++j)
+		temp.push_back(-1);
+	isMatch_table.push_back(temp);
+}
+
+return isMatch(s, p, isMatch_table, 0, 0);
+}
+
+// if the target string is empty but the text string is not empty
+for (int i = 0; i < s.size(); ++i)
+	isMatch_table[i][p.size()] = 0;
+// if both strings are empty, then they are matched
+isMatch_table[s.size()][p.size()] = 1;
+
+int isMatch(string& text, string& target, vector<vector<int>>& isMatch_table,int i, int j)
+{
+	if (isMatch_table[i][j] != -1)  // this subproblem has been computed nefore
+		return isMatch_table[i][j];
+
+	bool firstMatch = i < text.size() && (text[i] == target[j] || target[j] == '.');
+
+	int res;
+	if (j < target.size() - 1 && target[j + 1] == '*')
+	{
+		res = isMatch(text, target, i，j + 2) || 
+		      (firstMatch && isMatch(text, target, i + 1, j));
+	}
+	else
+	{
+		if (!firstMatch)
+			res = 0;
+		else
+			res = isMatch(text, target, i + 1, j + 1);
+	}
+
+	isMatch_table[i][j] = res;
+	return res;
+}
